@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">FactsAndQuotes</string>
-    <string name="quote_of_the_day">Quote of the day</string>
-    <string name="fact_of_the_day">Fact of the day</string>
+    <string name="quotes_of_the_day">Quotes of the day</string>
+    <string name="facts_of_the_day">Facts of the day</string>
+    <string name="jokes_of_the_day">Jokes of the day</string>
     <string name="about">About</string>
     <string name="dialog_message">This app uses awesome utility API.If something goes wrong with the app curse our backend developer Mr. Naveen Singh.</string>
     <string name="refresh">Have some patience....refreshing content</string>
