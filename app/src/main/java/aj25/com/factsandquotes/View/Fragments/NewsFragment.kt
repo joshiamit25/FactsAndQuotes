@@ -1,7 +1,8 @@
 package aj25.com.factsandquotes.View.Fragments
 
 import aj25.com.factsandquotes.R
-import aj25.com.factsandquotes.Utils.Adapters.JokesAdapter
+import aj25.com.factsandquotes.Utils.Adapters.NewsAdapter
+import aj25.com.factsandquotes.Utils.Adapters.QuotesAdapter
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
@@ -15,29 +16,29 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import kotlinx.android.synthetic.main.jokes_fragment_layout.*
+import kotlinx.android.synthetic.main.news_fragment_layout.*
 import org.json.JSONObject
 
 /**
  * Created by amit on 17/9/17.
  */
-class JokesFragment : Fragment() {
+class NewsFragment : Fragment() {
     private val BASE_URL = "http://utility-api.herokuapp.com/api/"
-    private val JOKES_URL = BASE_URL + "joke/jokeoftheday"
+    private val NEWS_URL = BASE_URL + "news/newsoftheday"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater?.inflate(R.layout.jokes_fragment_layout,container,false)
+        return inflater?.inflate(R.layout.news_fragment_layout, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         showView(progressbar)
-        jokes_recycler_view.layoutManager = LinearLayoutManager(activity)
-        getJokes(JOKES_URL)
+        news_recycler_view.layoutManager = LinearLayoutManager(activity)
+        getNews(NEWS_URL)
 
         refresh.setOnClickListener {
             refresh()
@@ -47,27 +48,33 @@ class JokesFragment : Fragment() {
         }
     }
 
-    private fun hideView(view : View) {
+    private fun hideView(view: View) {
         view.visibility = View.GONE
     }
-    private fun showView(view : View) {
+
+    private fun showView(view: View) {
         view.visibility = View.VISIBLE
     }
-    private fun getJokes(url : String?) {
-        var jokes = ArrayList<String>()
+
+    private fun getNews(url: String?) {
+        var newsTitle = ArrayList<String>()
+        var newsBody = ArrayList<String>()
         var queue = Volley.newRequestQueue(activity)
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null, Response.Listener<JSONObject> { response ->
 
-            val jokesArray  = response.optJSONArray("message")
-            Log.d("",jokesArray.toString())
-            for (i in 0..(jokesArray.length() - 1)) {
-                val quoteMessage = jokesArray[i].toString()
-                jokes.add(quoteMessage)
+            val newsArray = response.optJSONArray("message")
+            Log.d("", newsArray.toString())
+            for (i in 0..(newsArray.length() - 1)) {
+                var obj = newsArray.getJSONObject(i)
+                val newsTitleMessage = obj.optString("headLine")
+                val newsBodyMessage = obj.optString("articleBody")
+                newsTitle.add(newsTitleMessage)
+                newsBody.add(newsBodyMessage)
             }
+            val adapter = NewsAdapter(activity, newsTitle,newsBody)
 
-            val adapter = JokesAdapter(activity,jokes)
-            if (jokes_recycler_view != null) {
-                jokes_recycler_view.adapter = adapter
+            if(news_recycler_view != null) {
+                news_recycler_view.adapter = adapter
                 hideView(progressbar)
                 showView(main_content)
             }
@@ -78,14 +85,17 @@ class JokesFragment : Fragment() {
         })
         queue.add(jsonObjectRequest)
     }
-    private fun toast(message : String) {
-        Toast.makeText(activity,message,Toast.LENGTH_LONG).show()
+
+    private fun toast(message: String) {
+        Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
     }
+
     private fun refresh() {
         hideView(main_content)
         showView(progressbar)
-        getJokes(JOKES_URL)
+        getNews(NEWS_URL)
     }
+
     private fun showAboutDialog() {
         val dialog = AlertDialog.Builder(activity).create()
         dialog.setTitle(getString(R.string.about))

@@ -65,10 +65,12 @@ class QuotesFragment : Fragment() {
                 quotes.add(quoteMessage)
             }
             val adapter = QuotesAdapter(activity,quotes)
-            quotes_recycler_view.adapter = adapter
 
-            hideView(progressbar)
-            showView(main_content)
+            if (quotes_recycler_view != null) {
+                quotes_recycler_view.adapter = adapter
+                hideView(progressbar)
+                showView(main_content)
+            }
 
         }, Response.ErrorListener { error ->
             toast(error.message.toString())
